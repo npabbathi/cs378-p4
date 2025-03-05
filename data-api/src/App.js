@@ -16,6 +16,27 @@ function App() {
   const [lastValidCharacter, setLastValidCharacter] = useState('mario');
   const [amiiboURL, setURL] = useState("https://www.amiiboapi.com/api/amiibo/?name=mario");
 
+  const [typeData, setTypeData] = useState([]);
+  const [countData, setCountData] = useState([]);
+
+  const getStatData = () => {
+    let types = [];
+    let counts = []
+    for (let i in characters) {
+      if (types.includes(characters[i].type)) {
+        // types[characters[i].type] = types[characters[i].type] + 1
+        counts[types.indexOf(characters[i].type)]++;
+      } else {
+        // types[characters[i].type] = 1
+        types.push(characters[i].type)
+        counts.push(1);
+      }
+    }
+
+    setTypeData(types);
+    setCountData(counts)
+  }
+
   const handleSubmit = async (event, name) => {
     event.preventDefault(); //credit: chatgpt for debugging page refresh
     if (name.length === 0) {
@@ -31,6 +52,7 @@ function App() {
       if (data.amiibo && data.amiibo.length > 0) { 
         setURL(potentialURL);
         setLastValidCharacter(name.toLowerCase());
+        setCharacters(data.amiibo);
       } else {
         alert("Please enter a valid Nintendo character!");
       }
@@ -39,6 +61,8 @@ function App() {
       console.log(error);
     } finally {
       setCharacterName("");
+      setTypeData([]);
+      setCountData([]);
     }
   }
 
@@ -89,7 +113,18 @@ function App() {
 
       <hr/>
 
-      <h2 className='character_title'>{lastValidCharacter.toUpperCase()}</h2>
+      <div className='character_stats'>
+        <h2 className='character_title'>{lastValidCharacter.toUpperCase()}</h2>
+        <button className='stats_button' onClick={getStatData}><i class="fa fa-info"></i></button> <br/>
+      </div>
+
+      <div className="character_info">
+        {typeData.map((type, index) => (
+          <div>
+            <h4 className="stats_text">{type}(s): {countData[index]}</h4>
+          </div>
+        ))}
+      </div>
       
       <div className="characters">
         {characters.map((character) => (
