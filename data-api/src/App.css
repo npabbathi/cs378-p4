@@ -133,3 +133,9 @@ h3 {
   justify-content: center;
   text-align: center;
 }
+
+.graph_container {
+  margin-left: auto;
+  max-width: 20%;
+  margin-right: auto;
+}

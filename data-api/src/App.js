@@ -2,6 +2,8 @@ import './App.css';
 import {useEffect, useState} from "react";
 import Character from './components/Character.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import {Graph as GraphJS} from 'chart.js/auto';
+import {Doughnut} from "react-chartjs-2"
 
 
 // credit: https://www.youtube.com/watch?v=je3FTTunyp4
@@ -18,23 +20,23 @@ function App() {
 
   const [typeData, setTypeData] = useState([]);
   const [countData, setCountData] = useState([]);
+  const [isGraphVisible, setIsGraphVisible] = useState(false);
 
   const getStatData = () => {
     let types = [];
     let counts = []
     for (let i in characters) {
       if (types.includes(characters[i].type)) {
-        // types[characters[i].type] = types[characters[i].type] + 1
         counts[types.indexOf(characters[i].type)]++;
       } else {
-        // types[characters[i].type] = 1
         types.push(characters[i].type)
         counts.push(1);
       }
     }
 
     setTypeData(types);
-    setCountData(counts)
+    setCountData(counts);
+    setIsGraphVisible(!isGraphVisible);
   }
 
   const handleSubmit = async (event, name) => {
@@ -63,6 +65,7 @@ function App() {
       setCharacterName("");
       setTypeData([]);
       setCountData([]);
+      setIsGraphVisible(false);
     }
   }
 
@@ -117,14 +120,22 @@ function App() {
         <h2 className='character_title'>{lastValidCharacter.toUpperCase()}</h2>
         <button className='stats_button' onClick={getStatData}><i class="fa fa-info"></i></button> <br/>
       </div>
-
-      <div className="character_info">
-        {typeData.map((type, index) => (
-          <div>
-            <h4 className="stats_text">{type}(s): {countData[index]}</h4>
-          </div>
-        ))}
-      </div>
+      <div className="graph_container">
+        { isGraphVisible && (
+        <Doughnut data= {
+          {
+            labels: typeData,
+            datasets: [
+              {
+                label: "Number of Items",
+                data: countData,
+                borderRadius: 5,
+              }
+            ],
+          }
+        }/>)
+      }
+    </div>
       
       <div className="characters">
         {characters.map((character) => (
